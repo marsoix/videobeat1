@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beat Video Maker</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --panel: #121a2b;
+        --panel-2: #171f34;
+        --accent: #7c3aed;
+        --accent-2: #22c55e;
+        --text: #edf2ff;
+        --muted: #a7b3cf;
+        --line: rgba(255,255,255,0.08);
+        --danger: #ef4444;
+        --shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background:
+          radial-gradient(circle at top, rgba(124,58,237,0.28), transparent 40%),
+          linear-gradient(180deg, #0b1020 0%, #0d1324 100%);
+        color: var(--text);
+      }
+
+      body {
+        padding: 32px 20px 80px;
+      }
+
+      .container {
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 26px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      .brand-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), #38bdf8);
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+        box-shadow: var(--shadow);
+      }
+
+      .nav-badge {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 10px 14px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 28px;
+        align-items: stretch;
+      }
+
+      .panel {
+        background: rgba(17,22,35,0.9);
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      .hero-main {
+        padding: 28px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(124,58,237,0.14);
+        color: #d7c7ff;
+        border: 1px solid rgba(124,58,237,0.3);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      h1 {
+        font-size: clamp(2.4rem, 5vw, 4rem);
+        line-height: 1.05;
+        margin: 18px 0 16px;
+        letter-spacing: -0.06em;
+      }
+
+      .lead {
+        color: var(--muted);
+        font-size: 1.04rem;
+        line-height: 1.7;
+        max-width: 58ch;
+      }
+
+      .form-wrap {
+        margin-top: 28px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .input {
+        flex: 1 1 520px;
+        height: 58px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(255,255,255,0.03);
+        color: var(--text);
+        padding: 0 18px;
+        font-size: 15px;
+        outline: none;
+      }
+
+      .input::placeholder {
+        color: #8391b5;
+      }
+
+      .button {
+        height: 58px;
+        border: 0;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: transform 0.15s ease, filter 0.2s ease;
+        padding: 0 18px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .button:hover { transform: translateY(-1px); filter: brightness(1.06); }
+      .button:active { transform: translateY(0); }
+
+      .button-primary {
+        background: linear-gradient(135deg, var(--accent), #6d5efc);
+        color: white;
+      }
+
+      .button-secondary {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--line);
+        color: var(--text);
+      }
+
+      .sub-actions {
+        margin-top: 16px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(34,197,94,0.08);
+        border: 1px solid rgba(34,197,94,0.22);
+        color: #b8f5d0;
+        border-radius: 999px;
+        padding: 8px 10px;
+      }
+
+      .hero-side {
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .preview-card {
+        position: relative;
+        background: linear-gradient(180deg, rgba(124,58,237,0.18), rgba(12,16,29,0.6));
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        overflow: hidden;
+        height: 100%;
+        min-height: 400px;
+      }
+
+      .preview-art {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        filter: saturate(1.1) contrast(1.02);
+      }
+
+      .preview-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(8,11,18,0.08), rgba(8,11,18,0.84));
+      }
+
+      .preview-meta {
+        position: absolute;
+        inset: auto 0 0 0;
+        padding: 20px;
+      }
+
+      .preview-tag {
+        display: inline-block;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        font-size: 12px;
+        color: #dfe8ff;
+        margin-bottom: 12px;
+      }
+
+      .preview-title {
+        font-size: clamp(1.4rem, 2vw, 2rem);
+        margin: 0;
+        line-height: 1.1;
+      }
+
+      .preview-sub {
+        margin-top: 6px;
+        color: #bfd1ff;
+        font-size: 13px;
+      }
+
+      .content-grid {
+        margin-top: 28px;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 28px;
+      }
+
+      .section {
+        padding: 24px;
+      }
+
+      .section h3 {
+        margin: 0 0 18px;
+        font-size: 1.15rem;
+      }
+
+      .beat-card {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .beat-cover {
+        width: 180px;
+        height: 180px;
+        border-radius: 22px;
+        border: 1px solid var(--line);
+        background: #0d1324;
+        background-size: cover;
+        background-position: center;
+        box-shadow: var(--shadow);
+      }
+
+      .beat-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .beat-title {
+        font-size: clamp(1.3rem, 2vw, 1.9rem);
+        margin: 0;
+        letter-spacing: -0.04em;
+      }
+
+      .meta-line {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .label {
+        color: #dfe7ff;
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        opacity: 0.8;
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .tag {
+        background: rgba(255,255,255,0.03);
+        color: #dfe8ff;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      .keywords {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .keyword {
+        background: rgba(124,58,237,0.08);
+        border: 1px solid rgba(124,58,237,0.2);
+        color: #d7c7ff;
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      .link-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 8px;
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.02);
+        border-radius: 16px;
+        min-height: 56px;
+        padding: 12px 14px;
+      }
+
+      .external-link {
+        color: #d9e1ff;
+        text-decoration: none;
+        font-size: 14px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .controls {
+        display: grid;
+        gap: 18px;
+      }
+
+      .option-group {
+        display: grid;
+        gap: 12px;
+      }
+
+      .segmented {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .segment {
+        border: 1px solid var(--line);
+        background: rgba(255,255,255,0.02);
+        color: var(--text);
+        border-radius: 12px;
+        padding: 12px 16px;
+        min-width: 100px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+
+      .segment.active {
+        background: linear-gradient(135deg, rgba(124,58,237,0.22), rgba(34,197,94,0.16));
+        border-color: rgba(124,58,237,0.45);
+        box-shadow: inset 0 0 0 1px rgba(124,58,237,0.2);
+      }
+
+      .download-box {
+        border-top: 1px solid var(--line);
+        padding-top: 22px;
+        margin-top: 8px;
+      }
+
+      .download-btn {
+        width: 100%;
+        height: 56px;
+        border: 0;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--accent-2), #10b981);
+        color: #07110b;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+      }
+
+      .download-btn[disabled] {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .status {
+        margin-top: 12px;
+        color: var(--muted);
+        min-height: 20px;
+        font-size: 13px;
+      }
+
+      .empty-state {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 900px) {
+        .hero, .content-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .beat-card {
+          grid-template-columns: 1fr;
+        }
+
+        .beat-cover {
+          width: 100%;
+          max-width: 220px;
+          margin: 0 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">♫</div>
+          <span>Beat Video Maker</span>
+        </div>
+        <div class="nav-badge">BeatStars → MP3 → MP4</div>
+      </header>
+
+      <main class="hero">
+        <section class="panel hero-main">
+          <div class="eyebrow">Generación automática de video</div>
+          <h1>Crea videos de tus beats en segundos.</h1>
+          <p class="lead">
+            Pega el link de tu beat en BeatStars, extraemos la info del beat, la portada y el audio,
+            y te dejamos preparar un video vertical u horizontal listo para descargar en MP4.
+          </p>
+
+          <div class="form-wrap">
+            <input
+              id="beatUrl"
+              class="input"
+              type="url"
+              placeholder="https://www.beatstars.com/..."
+              value=""
+            />
+            <button id="analyzeBtn" class="button button-primary">Extraer beat</button>
+          </div>
+
+          <div class="sub-actions">
+            <span class="pill">✔ Video MP4</span>
+            <span class="pill">✔ Portada automática</span>
+            <span class="pill">✔ 30s / 1m / Beat completo</span>
+          </div>
+        </section>
+
+        <aside class="panel hero-side">
+          <div class="preview-card" id="previewCard">
+            <div class="preview-art" id="previewArt" style="background-image: linear-gradient(135deg, #3b82f6, #7c3aed);"></div>
+            <div class="preview-overlay"></div>
+            <div class="preview-meta">
+              <span class="preview-tag" id="previewTag">BeatStars</span>
+              <h2 class="preview-title" id="previewTitle">Tu beat aquí</h2>
+              <div class="preview-sub" id="previewSub">Pega un link para analizarlo</div>
+            </div>
+          </div>
+        </aside>
+      </main>
+
+      <section class="content-grid">
+        <div class="panel section">
+          <h3>Información del beat</h3>
+
+          <div id="beatInfo" class="empty-state">
+            Aún no hay datos del beat. Pega una URL para analizarla.
+          </div>
+        </div>
+
+        <div class="panel section controls">
+          <h3>Opciones del video</h3>
+
+          <div class="option-group">
+            <div class="label">Duración</div>
+            <div class="segmented">
+              <button class="segment active" data-duration="30">30s</button>
+              <button class="segment" data-duration="60">1 min</button>
+              <button class="segment" data-duration="full">Beat completo</button>
+            </div>
+          </div>
+
+          <div class="option-group">
+            <div class="label">Formato</div>
+            <div class="segmented">
+              <button class="segment active" data-orientation="vertical">Vertical</button>
+              <button class="segment" data-orientation="horizontal">Horizontal</button>
+            </div>
+          </div>
+
+          <div class="download-box">
+            <button id="downloadBtn" class="download-btn" disabled>Descargar MP4</button>
+            <div id="status" class="status">Listo para generar.</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script>
+      const beatInfo = document.getElementById('beatInfo');
+      const previewArt = document.getElementById('previewArt');
+      const previewTitle = document.getElementById('previewTitle');
+      const previewSub = document.getElementById('previewSub');
+      const previewTag = document.getElementById('previewTag');
+      const analyzeBtn = document.getElementById('analyzeBtn');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const statusEl = document.getElementById('status');
+
+      let selectedDuration = 30;
+      let selectedOrientation = 'vertical';
+      let currentBeat = null;
+
+      document.querySelectorAll('.segment[data-duration]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.segment[data-duration]').forEach((x) => x.classList.remove('active'));
+          btn.classList.add('active');
+          selectedDuration = btn.dataset.duration === 'full' ? 'full' : Number(btn.dataset.duration);
+        });
+      });
+
+      document.querySelectorAll('.segment[data-orientation]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.segment[data-orientation]').forEach((x) => x.classList.remove('active'));
+          btn.classList.add('active');
+          selectedOrientation = btn.dataset.orientation;
+        });
+      });
+
+      async function analyzeBeat() {
+        const href = document.getElementById('beatUrl').value.trim();
+
+        if (!href) {
+          statusEl.textContent = 'Pega un enlace válido de BeatStars.';
+          return;
+        }
+
+        statusEl.textContent = 'Analizando beat y preparando la vista previa...';
+
+        try {
+          const res = await fetch('/api/analyze-beat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ beatstarsUrl: href })
+          });
+
+          if (!res.ok) {
+            throw new Error('No se pudo analizar el beat.');
+          }
+
+          const data = await res.json();
+
+          currentBeat = data;
+          renderBeat(data);
+          statusEl.textContent = 'Beat analizado correctamente. Listo para exportar.';
+          downloadBtn.disabled = false;
+
+        } catch (error) {
+          console.error(error);
+          statusEl.textContent = 'Hubo un problema al analizar el beat. Revisa el link o prueba con un ejemplo.';
+          renderFallbackDemo();
+        }
+      }
+
+      function renderBeat(beat) {
+        const cover = beat.coverUrl || 'https://images.unsplash.com/photo-1516280440614-37939bbacd81?...';
+        previewArt.style.backgroundImage = `url("${cover}")`;
+        previewTitle.textContent = beat.title || 'Beat sin título';
+        previewSub.textContent = beat.artist || 'BeatStars';
+        previewTag.textContent = beat.source || 'BeatStars';
+
+        beatInfo.innerHTML = `
+          <div class="beat-card">
+            <div class="beat-cover" style="background-image:url('${cover}')"></div>
+            <div class="beat-meta">
+              <div>
+                <div class="label">Beat</div>
+                <h4 class="beat-title">${beat.title || 'Beat sin título'}</h4>
+              </div>
+
+              <div class="meta-line">
+                <strong>Artista:</strong> ${beat.artist || 'Desconocido'}
+              </div>
+
+              <div class="meta-line">
+                <strong>Audio:</strong> ${beat.audioUrl ? 'Extraído' : 'Sin audio'}
+              </div>
+
+              <div>
+                <div class="label">Tags</div>
+                <div class="tags">
+                  ${(beat.tags || ['BeatStars']).slice(0, 8).map(t => `<span class="tag">${t}</span>`).join('')}
+                </div>
+              </div>
+
+              <div>
+                <div class="label">Palabras clave</div>
+                <div class="keywords">
+                  ${(beat.keywords || ['trap', 'hiphop', 'beat']).slice(0, 10).map(k => `<span class="keyword">${k}</span>`).join('')}
+                </div>
+              </div>
+
+              <div>
+                <div class="label">BeatStars</div>
+                <div class="link-box">
+                  <a class="external-link" href="${beat.beatstarsUrl}" target="_blank" rel="noreferrer">
+                    ${beat.beatstarsUrl}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderFallbackDemo() {
+        currentBeat = {
+          title: 'Night Drive',
+          artist: 'Midnight Echo',
+          coverUrl: 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?...',
+          tags: ['trap', 'melodic', 'dark', 'bass', 'rnb'],
+          keywords: ['night drive', 'late night', 'lofi', 'hip-hop', 'vibes'],
+          audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+          beatstarsUrl: 'https://www.beatstars.com/',
+          source: 'BeatStars'
+        };
+
+        renderBeat(currentBeat);
+        downloadBtn.disabled = false;
+      }
+
+      analyzeBtn.addEventListener('click', analyzeBeat);
+
+      downloadBtn.addEventListener('click', async () => {
+        if (!currentBeat) {
+          statusEl.textContent = 'Primero analiza un beat.';
+          return;
+        }
+
+        try {
+          statusEl.textContent = 'Generando video MP4...';
+
+          const payload = {
+            title: currentBeat.title,
+            artist: currentBeat.artist,
+            audioUrl: currentBeat.audioUrl,
+            coverUrl: currentBeat.coverUrl,
+            beatstarsUrl: currentBeat.beatstarsUrl,
+            duration: selectedDuration,
+            orientation: selectedOrientation
+          };
+
+          const res = await fetch('/api/render-video', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!res.ok) {
+            const err = await res.text();
+            throw new Error(err || 'No se pudo generar el video.');
+          }
+
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${(currentBeat.title || 'beat').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-${selectedOrientation}-${selectedDuration === 'full' ? 'full' : selectedDuration + 's'}.mp4`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+
+          statusEl.textContent = 'Video listo para descargar.';
+        } catch (error) {
+          console.error(error);
+          statusEl.textContent = 'No se pudo renderizar el video. Revisa la URL del audio o intenta otro beat.';
+        }
+      });
+
+      renderFallbackDemo();
+    </script>
+  </body>
+</html>
